@@ -22,7 +22,7 @@ function toBlock(str: string, x: number, y: number): Block {
 
         const [dx1, dy1, dx2, dy2] = [x1 - x, y1 - y, x2 - x, y2 - y];
 
-        return [dy2 + 11, dx2 + 11, dy1 + 11, dx1 + 11]
+        return [dy1 + 11, dx1 + 11, dy2 + 11, dx2 + 11]
             .map((v, i) => v * (24 ** i))
             .reduce((a, b) => a + b);
     }
@@ -33,6 +33,8 @@ function toBlock(str: string, x: number, y: number): Block {
         case '+': return encode94(args2() * 94 + 1);
         case '-': return encode94(args2() * 94 + 2);
         case '=': return encode94(args2() * 94 + 6);
+        case 'L': return encode94(args2() * 94 + 8);
+        case 'G': return encode94(args2() * 94 + 9);
         case 'O': return encode94(args1() * 94 + 12)
         case 'N': return encode94(args1() * 94 + 20)
         case 'I': return encode94(args1() * 94 + 21);
