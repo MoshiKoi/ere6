@@ -1,10 +1,8 @@
 import fs from "fs";
 import deasync from "deasync";
 
-/**
- * 2x2 block of characters, in the order top-left, top-right, bottom-left, bottom-right
- */
-type Block = string
+import { Block } from "./common";
+import { encode94, decode94 } from "./base94";
 
 /**
  * Source blocks, in [row][column] order
@@ -74,19 +72,6 @@ const apply = (
     decode: (block: Block) => number,
     operation: (...args: number[]) => any) =>
     (...args: Block[]) => encode(operation(...args.map(decode)));
-
-/**
- * Base 94 decode a string (SPACE = 0)
- */
-const decode94 = (block: Block) => [...block].reduce((r, o, _) => 94 * r + (block.charCodeAt(_) - 32), 0);
-
-/**
- * Base 94 encode a number (SPACE = 0)
- */
-const encode94 = (n: number): Block =>
-    (Array.from({ length: 4 }) as undefined[])
-        .reduce((r: string, o, _): string => String.fromCharCode(32 + (Math.floor(n / 94 ** _) % 94)) + r, "");
-
 
 const m = (r: number) => [(r % 24) - 11, Math.floor(r / 24)];
 
