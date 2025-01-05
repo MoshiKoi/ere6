@@ -39,7 +39,7 @@ const assertBounds = (blocks: BlockGrid, x: number, y: number) => {
 /**
  * Helper function that converts a function taking a number into the same function but returning the number
  */
-const n = (fn: (n: number) => void) => (r: number) => (fn(r), r);
+const withReturn = (fn: (n: number) => void) => (r: number) => (fn(r), r);
 
 let cur_dx = 1;
 let cur_dy = 0;
@@ -73,7 +73,7 @@ const apply = (
     operation: (...args: number[]) => any) =>
     (...args: Block[]) => encode(operation(...args.map(decode)));
 
-const m = (r: number) => [(r % 24) - 11, Math.floor(r / 24)];
+const m24 = (r: number) => [(r % 24) - 11, Math.floor(r / 24)];
 
 const read = () => {
     let buffer: Buffer | null = null;
@@ -81,15 +81,14 @@ const read = () => {
     for (process.stdin.once("data", data => { buffer = data; }); null === buffer;)
         deasync.runLoopOnce();
 
-    // @ts-ignore
     return buffer.toString().trim() as string;
 };
 
-const p = (blocks: BlockGrid, r: number): [x: number, y: number, number] => {
+const getPos = (blocks: BlockGrid, r: number): [x: number, y: number, number] => {
     let offset_y: number, offset_x: number;
 
-    [offset_y, r] = m(r);
-    [offset_x, r] = m(r);
+    [offset_y, r] = m24(r);
+    [offset_x, r] = m24(r);
 
     assertBounds(blocks, offset_x + cur_x, offset_y + cur_y);
 
@@ -105,14 +104,14 @@ const step = (blocks: BlockGrid) => {
         | ((a: number, b: number) => boolean);
 
     const createBinaryFn = (fn: BinOp) => () => {
-        const [x1, y1, n] = p(blocks, o);
-        const [x2, y2, _] = p(blocks, n);
+        const [x1, y1, n] = getPos(blocks, o);
+        const [x2, y2, _] = getPos(blocks, n);
         blocks[y2][x2] = apply(encode94, decode94, fn)(blocks[y2][x2], blocks[y1][x1]);
     };
 
-    const createUnaryFn = (r: (n: number) => number) => () => {
-        const [x, y, _] = p(blocks, o);
-        blocks[y][x] = apply(encode94, decode94, r)(blocks[y][x]);
+    const createUnaryFn = (fn: (n: number) => number) => () => {
+        const [x, y, _] = getPos(blocks, o);
+        blocks[y][x] = apply(encode94, decode94, fn)(blocks[y][x]);
     };
 
     const ops: { [key: number]: () => void } = {
@@ -127,21 +126,34 @@ const step = (blocks: BlockGrid) => {
         9: createBinaryFn((a, b) => a > b),
         10: createBinaryFn((a, b) => a || b),
         11: createBinaryFn((a, b) => a && b),
-        12: createUnaryFn(n(e => process.stdout.write(String.fromCharCode(e)))),
+        12: createUnaryFn(withReturn(n => process.stdout.write(String.fromCharCode(n)))),
         13: createUnaryFn((_) => read().charCodeAt(0)),
         14: () => { (cur_dx = 1), (cur_dy = 0); },
         15: () => { (cur_dx = -1), (cur_dy = 0); },
         16: () => { (cur_dx = 0), (cur_dy = 1); },
         17: () => { (cur_dx = 0), (cur_dy = -1); },
-        18: createUnaryFn(n(e => travelBack(e))),
+        18: createUnaryFn(withReturn(n => travelBack(n))),
         19: () => process.exit(0),
-        20: createUnaryFn(n(e => process.stdout.write(e.toString()))),
+        20: createUnaryFn(withReturn(n => process.stdout.write(n.toString()))),
         21: createUnaryFn((_) => parseInt(read()) || 0),
     };
     ops[r % 94]?.();
 };
 
 const decoded = decode(process.argv[2]);
+
+const dbgDecodeOp = (block: Block) => {
+    const r = decode94(block)
+    const o = Math.floor(r / 94);
+
+    let [offset_y, p] = m24(o);
+    let [offset_x, _] = m24(p);
+
+    return [r % 94, offset_x, offset_y]
+}
+
+console.log(decoded.map(row => row.map(dbgDecodeOp)))
+
 run(decoded);
 
 /* ☆ જ⁀➴ meow meow ^-^ ☆૮꒰•༝ •。꒱ა */
