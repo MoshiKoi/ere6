@@ -33,7 +33,7 @@ let isOutOfBounds = (blocks: BlockGrid, x: number, y: number) =>
     y < 0 || y >= blocks.length || x < 0 || x >= blocks[0].length;
 
 const assertBounds = (blocks: BlockGrid, x: number, y: number) => {
-    if (isOutOfBounds(blocks, x, y)) throw Error("Out of bounds.");
+    if (isOutOfBounds(blocks, x, y)) throw Error(`Out of bounds. ${x} ${y}`);
 }
 
 /**
