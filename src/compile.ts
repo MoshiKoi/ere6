@@ -33,8 +33,8 @@ function toBlock(str: string, x: number, y: number): Block {
         case '+': return encode94(args2() * 94 + 1);
         case '-': return encode94(args2() * 94 + 2);
         case '=': return encode94(args2() * 94 + 6);
-        case 'L': return encode94(args2() * 94 + 8);
-        case 'G': return encode94(args2() * 94 + 9);
+        case 'G': return encode94(args2() * 94 + 8);
+        case 'L': return encode94(args2() * 94 + 9);
         case 'O': return encode94(args1() * 94 + 12)
         case 'N': return encode94(args1() * 94 + 20)
         case 'I': return encode94(args1() * 94 + 21);
@@ -42,6 +42,7 @@ function toBlock(str: string, x: number, y: number): Block {
         case '<': return encode94(15);
         case 'v': return encode94(16);
         case '^': return encode94(17);
+        case 'X': return encode94(19);
         default: return encode94(0);
     }
 }
