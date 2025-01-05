@@ -166,18 +166,22 @@ const asChar = (opCode: number) => ({
     21: 'I'
 }[opCode] ?? ' ')
 
-const dbgDecodeOp = (block: Block) => {
+const dbgDecodeOp = (block: Block, x: number, y: number) => {
     const r = decode94(block)
-    const o = Math.floor(r / 94);
+    let o = Math.floor(r / 94);
 
-    let [offset_y, p] = m24(o);
-    let [offset_x, _] = m24(p);
+    let [offset_y1, o1] = m24(o);
+    let [offset_x1, o2] = m24(o1);
 
-    return [r % 94, offset_x, offset_y]
+    let [offset_y2, o3] = m24(o2);
+    let [offset_x2, _] = m24(o3);
+
+    return [r % 94, x + offset_x1, y + offset_y1, x + offset_x2, y + offset_y2]
 }
 
-console.log(decoded.map(row => row.map(v => asChar(dbgDecodeOp(v)[0])).join('')).join('\n'))
-console.log(decoded.map(row => row.map(dbgDecodeOp)))
+console.log(decoded.map((row, y) => row.map((v, x) => asChar(dbgDecodeOp(v, x, y)[0])).join('')).join('\n'))
+console.log(decoded.map((row, y) => row.map((v, x) => decode94(v))))
+console.log(decoded.map((row, y) => row.map((v, x) => dbgDecodeOp(v, x, y))))
 
 run(decoded);
 
