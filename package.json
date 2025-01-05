@@ -1,0 +1,23 @@
+{
+  "name": "esore",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "bin": "bf4",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "deasync": "^0.1.30",
+    "node-gyp": "^11.0.0"
+  },
+  "devDependencies": {
+    "@types/deasync": "^0.1.5",
+    "@types/node": "^22.10.5",
+    "typescript": "^5.7.2"
+  }
+}
