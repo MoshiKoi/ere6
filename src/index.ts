@@ -142,6 +142,30 @@ const step = (blocks: BlockGrid) => {
 
 const decoded = decode(process.argv[2]);
 
+const asChar = (opCode: number) => ({
+    1: '+',
+    2: '-',
+    3: '*',
+    4: '/',
+    5: '%',
+    6: '=',
+    7: '!',
+    8: '<',
+    9: '>',
+    10: '|',
+    11: '&',
+    12: 'o',
+    13: 'R',
+    14: '>',
+    15: '<',
+    16: 'v',
+    17: '^',
+    18: 'T',
+    19: 'X',
+    20: 'N',
+    21: 'I'
+}[opCode] ?? ' ')
+
 const dbgDecodeOp = (block: Block) => {
     const r = decode94(block)
     const o = Math.floor(r / 94);
@@ -152,6 +176,7 @@ const dbgDecodeOp = (block: Block) => {
     return [r % 94, offset_x, offset_y]
 }
 
+console.log(decoded.map(row => row.map(v => asChar(dbgDecodeOp(v)[0])).join('')).join('\n'))
 console.log(decoded.map(row => row.map(dbgDecodeOp)))
 
 run(decoded);
